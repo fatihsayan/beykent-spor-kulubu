@@ -1,0 +1,175 @@
+@{
+    ViewData["Title"] = "İstatistikler";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Üst Bilgi Kartı -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white shadow-lg">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-bar-chart-line-fill display-4 me-4"></i>
+                        <div>
+                            <h2 class="fw-bold mb-2">İstatistikler ve Raporlar</h2>
+                            <p class="lead mb-0">Grubunuzla ilgili detaylı istatistikler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kart İstatistikleri -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-4">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="bi bi-people-fill text-primary fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold">@ViewBag.ToplamSporcu</h3>
+                    <p class="text-muted mb-0">Toplam Sporcu</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-4">
+                    <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold">@ViewBag.BugunYoklama</h3>
+                    <p class="text-muted mb-0">Bugün Yoklama</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-4">
+                    <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="bi bi-calendar-week-fill text-warning fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold">@ViewBag.HaftalikYoklama</h3>
+                    <p class="text-muted mb-0">Haftalık Yoklama</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-4">
+                    <div class="bg-info bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="bi bi-percent text-info fs-1"></i>
+                    </div>
+                    @{
+                        var katilimYuzdesi = ViewBag.ToplamSporcu > 0 
+                            ? (ViewBag.HaftalikYoklama * 100 / (ViewBag.ToplamSporcu * 7)) 
+                            : 0;
+                    }
+                    <h3 class="fw-bold">%@katilimYuzdesi</h3>
+                    <p class="text-muted mb-0">Katılım Oranı</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafik Bölümü -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-graph-up me-2"></i>Haftalık Katılım Grafiği
+                </div>
+                <div class="card-body">
+                    <canvas id="katilimGrafik" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-pie-chart-fill me-2"></i>Durum Dağılımı
+                </div>
+                <div class="card-body">
+                    <canvas id="durumGrafik" width="200" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Kütüphanesi -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Haftalık Katılım Grafiği
+        var ctx1 = document.getElementById('katilimGrafik').getContext('2d');
+        var katilimGrafik = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'],
+                datasets: [{
+                    label: 'Katılım Sayısı',
+                    data: [12, 15, 14, 16, 13, 10, 8],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Durum Dağılımı Grafiği (Pasta Grafik)
+        var ctx2 = document.getElementById('durumGrafik').getContext('2d');
+        var durumGrafik = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Katıldı', 'Katılmadı', 'İzinli', 'Raporlu'],
+                datasets: [{
+                    data: [45, 12, 8, 5],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(255, 205, 86, 0.8)',
+                        'rgba(201, 203, 207, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card {
+        transition: transform 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>

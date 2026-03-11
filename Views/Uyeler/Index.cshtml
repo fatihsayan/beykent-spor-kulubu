@@ -1,0 +1,398 @@
+@model IEnumerable<SporKulubu.Models.Uye>
+
+@{
+    ViewData["Title"] = "Üye Listesi";
+}
+
+<div class="container mt-4">
+    <!-- Başlık ve Butonlar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-people-fill text-primary me-2"></i>
+                Üye Listesi
+            </h2>
+            <p class="text-muted small mb-0">Toplam @Model.Count() kayıtlı sporcu</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Ekle" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Yeni Üye Ekle
+            </a>
+            <a asp-action="BorcluUyeler" class="btn btn-warning">
+                <i class="bi bi-exclamation-triangle me-1"></i>Borçlu Üyeler
+            </a>
+            <a asp-action="OrnekVeriEkle" class="btn btn-success">
+                <i class="bi bi-database-fill me-1"></i>Örnek Veri Ekle
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtreleme Kartı -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-funnel text-primary me-2"></i>
+                Filtreleme
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Spor Salonu</label>
+                    <select name="salonId" class="form-select" id="salonFilter" asp-items="ViewBag.SporSalonlari">
+                        <option value="">Tüm Salonlar</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Branş</label>
+                    <select name="bransId" class="form-select" id="bransFilter">
+                        <option value="">Tüm Branşlar</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Takım</label>
+                    <select name="takimId" class="form-select" id="takimFilter">
+                        <option value="">Tüm Takımlar</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Grup</label>
+                    <select name="grupId" class="form-select" id="grupFilter">
+                        <option value="">Tüm Gruplar</option>
+                    </select>
+                </div>
+
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-search me-1"></i>Filtrele
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-arrow-repeat me-1"></i>Temizle
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aktif Filtre Bilgisi -->
+    @{
+        var secilenSalonId = ViewBag.SecilenSalonId?.ToString() ?? "";
+        var secilenBransId = ViewBag.SecilenBransId?.ToString() ?? "";
+        var secilenTakimId = ViewBag.SecilenTakimId?.ToString() ?? "";
+        var secilenGrupId = ViewBag.SecilenGrupId?.ToString() ?? "";
+        var salonlar = ViewBag.SporSalonlari as IEnumerable<SelectListItem>;
+    }
+
+    @if (!string.IsNullOrEmpty(secilenSalonId) || !string.IsNullOrEmpty(secilenBransId) || !string.IsNullOrEmpty(secilenTakimId) || !string.IsNullOrEmpty(secilenGrupId))
+    {
+        <div class="alert alert-info d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Aktif Filtreler:</strong>
+                @if (!string.IsNullOrEmpty(secilenSalonId))
+                {
+                    var salonAdi = "-";
+                    if (salonlar != null)
+                    {
+                        foreach (var s in salonlar)
+                        {
+                            if (s.Value == secilenSalonId)
+                            {
+                                salonAdi = s.Text;
+                                break;
+                            }
+                        }
+                    }
+                    <span class="badge bg-primary ms-2">@salonAdi</span>
+                }
+                @if (!string.IsNullOrEmpty(secilenBransId))
+                {
+                    <span class="badge bg-success ms-2">Branş Seçili</span>
+                }
+                @if (!string.IsNullOrEmpty(secilenTakimId))
+                {
+                    <span class="badge bg-warning text-dark ms-2">Takım Seçili</span>
+                }
+                @if (!string.IsNullOrEmpty(secilenGrupId))
+                {
+                    <span class="badge bg-info ms-2">Grup Seçili</span>
+                }
+            </div>
+            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-x-circle me-1"></i>Filtreleri Temizle
+            </a>
+        </div>
+    }
+
+    <!-- Üye Listesi Tablosu -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="50">#</th>
+                            <th>Ad Soyad</th>
+                            <th>Telefon</th>
+                            <th>Doğum Tarihi</th>
+                            <th>Salon</th>
+                            <th>Branş</th>
+                            <th>Takım</th>
+                            <th>Grup</th>
+                            <th>Aidat</th>
+                            <th>Son Ödeme</th>
+                            <th>Kıyafet</th>
+                            <th width="120">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int rowIndex = 0;
+                        }
+                        @foreach (var uye in Model)
+                        {
+                            rowIndex++;
+                            <tr>
+                                <td class="fw-bold">@rowIndex</td>
+                                <td>@uye.AdSoyad</td>
+                                <td>@uye.Telefon</td>
+                                <td>@uye.DogumTarihi.ToShortDateString()</td>
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2">
+                                        @(uye.SporSalonu?.Ad ?? "-")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success p-2">
+                                        @(uye.Brans?.Ad ?? "-")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (uye.Takim != null)
+                                    {
+                                        <span class="badge bg-warning bg-opacity-10 text-warning p-2">
+                                            @uye.Takim.Ad
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary p-2">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (uye.Grup != null)
+                                    {
+                                        <span class="badge bg-info bg-opacity-10 text-info p-2">
+                                            @uye.Grup.Ad
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary p-2">-</span>
+                                    }
+                                </td>
+                                <td class="fw-bold text-end">@uye.AylikAidat.ToString("C")</td>
+                                <td class="text-center">
+                                    @if (uye.SonAidatOdemeTarihi.HasValue)
+                                    {
+                                        <span class="badge bg-info">@uye.SonAidatOdemeTarihi.Value.ToShortDateString()</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">-</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (uye.KiyafetVerildiMi)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Verildi
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-x-circle me-1"></i>Verilmedi
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Detay" asp-route-id="@uye.Id" class="btn btn-sm btn-outline-info" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Duzenle" asp-route-id="@uye.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Sil" asp-route-id="@uye.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boş Liste Durumu -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-people display-1 text-muted"></i>
+            <h4 class="mt-3 text-muted">Henüz üye kaydı bulunmuyor</h4>
+            <p class="text-muted">Yeni bir üye eklemek için butona tıklayın.</p>
+            <a asp-action="Ekle" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle me-1"></i>Yeni Üye Ekle
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Sayfa yüklendiğinde seçili değerleri al
+            var seciliSalonId = '@ViewBag.SecilenSalonId';
+            var seciliBransId = '@ViewBag.SecilenBransId';
+            var seciliTakimId = '@ViewBag.SecilenTakimId';
+            var seciliGrupId = '@ViewBag.SecilenGrupId';
+
+            // Branşları getir (Salon seçilince)
+            function branslariGetir(salonId, seciliBransId) {
+                if (salonId) {
+                    $.getJSON('/Uyeler/BranslariGetir', { salonId: salonId }, function(data) {
+                        var bransSelect = $('#bransFilter');
+                        bransSelect.empty().append('<option value="">Tüm Branşlar</option>');
+                        if (data && data.length > 0) {
+                            $.each(data, function(i, brans) {
+                                var option = $('<option>').text(brans.ad).val(brans.id);
+                                if (seciliBransId && brans.id == seciliBransId) {
+                                    option.attr('selected', 'selected');
+                                }
+                                bransSelect.append(option);
+                            });
+                            
+                            // Branş seçiliyse takımları da getir
+                            if (seciliBransId) {
+                                takimlariGetir(seciliBransId, seciliTakimId);
+                            }
+                        } else {
+                            bransSelect.append('<option value="">Bu salonda branş yok</option>');
+                        }
+                    }).fail(function() {
+                        $('#bransFilter').empty().append('<option value="">Hata oluştu</option>');
+                    });
+                } else {
+                    $('#bransFilter').empty().append('<option value="">Tüm Branşlar</option>');
+                }
+            }
+
+            // Takımları getir (Branş seçilince)
+            function takimlariGetir(bransId, seciliTakimId) {
+                if (bransId) {
+                    $.getJSON('/Uyeler/TakimlariGetir', { bransId: bransId }, function(data) {
+                        var takimSelect = $('#takimFilter');
+                        takimSelect.empty().append('<option value="">Tüm Takımlar</option>');
+                        if (data && data.length > 0) {
+                            $.each(data, function(i, takim) {
+                                var option = $('<option>').text(takim.ad).val(takim.id);
+                                if (seciliTakimId && takim.id == seciliTakimId) {
+                                    option.attr('selected', 'selected');
+                                }
+                                takimSelect.append(option);
+                            });
+                            
+                            // Takım seçiliyse grupları da getir
+                            if (seciliTakimId) {
+                                gruplariGetir(seciliTakimId, seciliGrupId);
+                            }
+                        } else {
+                            takimSelect.append('<option value="">Bu branşta takım yok</option>');
+                        }
+                    }).fail(function() {
+                        $('#takimFilter').empty().append('<option value="">Hata oluştu</option>');
+                    });
+                } else {
+                    $('#takimFilter').empty().append('<option value="">Tüm Takımlar</option>');
+                }
+            }
+
+            // Grupları getir (Takım seçilince)
+            function gruplariGetir(takimId, seciliGrupId) {
+                if (takimId) {
+                    $.getJSON('/Uyeler/GruplariGetir', { takimId: takimId }, function(data) {
+                        var grupSelect = $('#grupFilter');
+                        grupSelect.empty().append('<option value="">Tüm Gruplar</option>');
+                        if (data && data.length > 0) {
+                            $.each(data, function(i, grup) {
+                                var option = $('<option>').text(grup.ad).val(grup.id);
+                                if (seciliGrupId && grup.id == seciliGrupId) {
+                                    option.attr('selected', 'selected');
+                                }
+                                grupSelect.append(option);
+                            });
+                        } else {
+                            grupSelect.append('<option value="">Bu takımda grup yok</option>');
+                        }
+                    }).fail(function() {
+                        $('#grupFilter').empty().append('<option value="">Hata oluştu</option>');
+                    });
+                } else {
+                    $('#grupFilter').empty().append('<option value="">Tüm Gruplar</option>');
+                }
+            }
+
+            // Salon değişince branşları getir
+            $('#salonFilter').change(function() {
+                var salonId = $(this).val();
+                $('#bransFilter').empty().append('<option value="">Yükleniyor...</option>');
+                $('#takimFilter').empty().append('<option value="">Tüm Takımlar</option>');
+                $('#grupFilter').empty().append('<option value="">Tüm Gruplar</option>');
+                
+                if (salonId) {
+                    branslariGetir(salonId, null);
+                } else {
+                    $('#bransFilter').empty().append('<option value="">Tüm Branşlar</option>');
+                }
+            });
+
+            // Branş değişince takımları getir
+            $('#bransFilter').change(function() {
+                var bransId = $(this).val();
+                $('#takimFilter').empty().append('<option value="">Yükleniyor...</option>');
+                $('#grupFilter').empty().append('<option value="">Tüm Gruplar</option>');
+                
+                if (bransId) {
+                    takimlariGetir(bransId, null);
+                } else {
+                    $('#takimFilter').empty().append('<option value="">Tüm Takımlar</option>');
+                }
+            });
+
+            // Takım değişince grupları getir
+            $('#takimFilter').change(function() {
+                var takimId = $(this).val();
+                $('#grupFilter').empty().append('<option value="">Yükleniyor...</option>');
+                
+                if (takimId) {
+                    gruplariGetir(takimId, null);
+                } else {
+                    $('#grupFilter').empty().append('<option value="">Tüm Gruplar</option>');
+                }
+            });
+
+            // Sayfa yüklendiğinde seçili salon varsa branşları getir
+            if (seciliSalonId && seciliSalonId !== '') {
+                $('#salonFilter').val(seciliSalonId);
+                branslariGetir(seciliSalonId, seciliBransId);
+            }
+        });
+    </script>
+}

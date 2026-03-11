@@ -1,0 +1,78 @@
+@model IEnumerable<SporKulubu.Models.Aidat>
+
+@{
+    ViewData["Title"] = "Aidat Geçmişi";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary">
+                <i class="bi bi-cash-stack me-2"></i>
+                @ViewBag.UyeAdi - Aidat Geçmişi
+            </h2>
+            <p class="text-muted mb-0">
+                Aylık Aidat: <strong>@ViewBag.AylikAidat.ToString("C")</strong> | 
+                Toplam Borç: <strong class="@(ViewBag.ToplamBorc > 0 ? "text-danger" : "text-success")">@ViewBag.ToplamBorc.ToString("C")</strong>
+            </p>
+        </div>
+        <div>
+            <a asp-action="Ekle" asp-route-uyeId="@ViewBag.UyeId" class="btn btn-success">
+                <i class="bi bi-plus-circle me-1"></i>Yeni Ödeme
+            </a>
+            <a asp-controller="Uyeler" asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Ödeme Tarihi</th>
+                            <th>Tutar</th>
+                            <th>Dönem</th>
+                            <th>Durum</th>
+                            <th>Açıklama</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Select((value, i) => new { i = i + 1, value }))
+                        {
+                            <tr>
+                                <td>@item.i</td>
+                                <td>@item.value.OdemeTarihi.ToShortDateString()</td>
+                                <td class="fw-bold text-success">@item.value.Tutar.ToString("C")</td>
+                                <td>@item.value.Ay</td>
+                                <td>
+                                    @if (item.value.OdendiMi)
+                                    {
+                                        <span class="badge bg-success">Ödendi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Ödenmedi</span>
+                                    }
+                                </td>
+                                <td>@item.value.Aciklama</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Henüz aidat kaydı bulunmuyor. Yeni ödeme eklemek için 
+                    <a asp-action="Ekle" asp-route-uyeId="@ViewBag.UyeId" class="alert-link">tıklayın</a>.
+                </div>
+            }
+        </div>
+    </div>
+</div>

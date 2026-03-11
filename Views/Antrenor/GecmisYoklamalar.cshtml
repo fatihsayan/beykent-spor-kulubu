@@ -1,0 +1,192 @@
+@model IEnumerable<SporKulubu.Models.Yoklama>
+
+@{
+    ViewData["Title"] = "Geçmiş Yoklamalar";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Başlık Kartı -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white shadow-lg">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock-history display-4 me-4"></i>
+                        <div>
+                            <h2 class="fw-bold mb-2">Geçmiş Yoklamalar</h2>
+                            <p class="lead mb-0">Son 100 yoklama kaydı</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtreleme Kartı -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Tarih Aralığı</label>
+                            <div class="d-flex gap-2">
+                                <input type="date" name="baslangic" class="form-control" value="@ViewBag.Baslangic?.ToString("yyyy-MM-dd")" placeholder="Başlangıç" />
+                                <input type="date" name="bitis" class="form-control" value="@ViewBag.Bitis?.ToString("yyyy-MM-dd")" placeholder="Bitiş" />
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel me-2"></i>Filtrele
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-1">Toplam Yoklama</h5>
+                            <h3 class="text-primary">@Model.Count()</h3>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Son Tarih</h5>
+                            <h5 class="text-muted">@(Model.Any() ? Model.First().Tarih.ToShortDateString() : "-")</h5>
+                        </div>
+                        <a href="/Antrenor/Yoklama" class="btn btn-outline-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Yeni Yoklama
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yoklama Listesi -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-list-check text-primary me-2"></i>
+                        Yoklama Kayıtları
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="50">#</th>
+                                        <th>Tarih</th>
+                                        <th>Sporcu</th>
+                                        <th>Durum</th>
+                                        <th>Not</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int index = 0;
+                                    }
+                                    @foreach (var yoklama in Model)
+                                    {
+                                        index++;
+                                        <tr>
+                                            <td class="fw-bold">@index</td>
+                                            <td>
+                                                <span class="badge bg-info p-2">
+                                                    <i class="bi bi-calendar me-1"></i>@yoklama.Tarih.ToShortDateString()
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-person-circle text-primary me-2"></i>
+                                                    <span class="fw-bold">@yoklama.Uye?.AdSoyad</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (yoklama.Durum == "Katıldı")
+                                                {
+                                                    <span class="badge bg-success p-2">
+                                                        <i class="bi bi-check-circle me-1"></i>@yoklama.Durum
+                                                    </span>
+                                                }
+                                                else if (yoklama.Durum == "Katılmadı")
+                                                {
+                                                    <span class="badge bg-danger p-2">
+                                                        <i class="bi bi-x-circle me-1"></i>@yoklama.Durum
+                                                    </span>
+                                                }
+                                                else if (yoklama.Durum == "İzinli")
+                                                {
+                                                    <span class="badge bg-warning text-dark p-2">
+                                                        <i class="bi bi-calendar-check me-1"></i>@yoklama.Durum
+                                                    </span>
+                                                }
+                                                else if (yoklama.Durum == "Raporlu")
+                                                {
+                                                    <span class="badge bg-secondary p-2">
+                                                        <i class="bi bi-file-medical me-1"></i>@yoklama.Durum
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-light text-dark p-2">@yoklama.Durum</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(yoklama.Not))
+                                                {
+                                                    <span class="text-muted small">@yoklama.Not</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="/Antrenor/Yoklama?tarih=@yoklama.Tarih.ToString("yyyy-MM-dd")" 
+                                                       class="btn btn-sm btn-outline-primary" 
+                                                       title="Bu Tarihe Git">
+                                                        <i class="bi bi-calendar-week"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-clock-history display-1 text-muted"></i>
+                            <h4 class="mt-3 text-muted">Henüz yoklama kaydı bulunmuyor</h4>
+                            <p class="text-muted">Yoklama alarak kayıt oluşturabilirsiniz.</p>
+                            <a href="/Antrenor/Yoklama" class="btn btn-primary mt-2">
+                                <i class="bi bi-plus-circle me-1"></i>Yeni Yoklama Al
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .badge {
+        font-weight: 500;
+    }
+</style>

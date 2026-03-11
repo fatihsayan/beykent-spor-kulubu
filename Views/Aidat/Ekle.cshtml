@@ -1,0 +1,249 @@
+@model SporKulubu.Models.Uye
+
+@{
+    ViewData["Title"] = "Yeni Sporcu Kaydı";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">
+        <i class="bi bi-person-plus-fill text-primary me-2"></i>
+        Yeni Sporcu Kaydı
+    </h2>
+
+    <form asp-action="Ekle" method="post">
+        <div class="row">
+            <!-- Kişisel Bilgiler -->
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-person-badge me-2"></i>Kişisel Bilgiler
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="AdSoyad" class="form-label fw-bold">Ad Soyad</label>
+                            <input asp-for="AdSoyad" class="form-control" />
+                            <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Telefon" class="form-label fw-bold">Telefon</label>
+                            <input asp-for="Telefon" class="form-control" />
+                            <span asp-validation-for="Telefon" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="DogumTarihi" class="form-label fw-bold">Doğum Tarihi</label>
+                            <input asp-for="DogumTarihi" class="form-control" type="date" />
+                            <span asp-validation-for="DogumTarihi" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Veli Bilgileri -->
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-people me-2"></i>Veli Bilgileri
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="VeliAdSoyad" class="form-label fw-bold">Veli Ad Soyad</label>
+                            <input asp-for="VeliAdSoyad" class="form-control" />
+                            <span asp-validation-for="VeliAdSoyad" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="VeliTelefon" class="form-label fw-bold">Veli Telefon</label>
+                            <input asp-for="VeliTelefon" class="form-control" />
+                            <span asp-validation-for="VeliTelefon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spor Bilgileri -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning">
+                <i class="bi bi-trophy me-2"></i>Spor Bilgileri
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Spor Salonu</label>
+                            <select asp-for="SporSalonuId" class="form-select" id="salonSelect" asp-items="ViewBag.SporSalonlari">
+                                <option value="">-- Salon Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Branş</label>
+                            <select asp-for="BransId" class="form-select" id="bransSelect">
+                                <option value="">-- Önce Salon Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Takım</label>
+                            <select asp-for="TakimId" class="form-select" id="takimSelect">
+                                <option value="">-- Önce Branş Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Grup</label>
+                            <select asp-for="GrupId" class="form-select" id="grupSelect">
+                                <option value="">-- Önce Takım Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aidat Bilgileri -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-cash-stack me-2"></i>Aidat Bilgileri
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="AylikAidat" class="form-label fw-bold">Aylık Aidat (TL)</label>
+                            <input asp-for="AylikAidat" class="form-control" />
+                            <span asp-validation-for="AylikAidat" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="SonAidatOdemeTarihi" class="form-label fw-bold">Son Aidat Ödeme Tarihi</label>
+                            <input asp-for="SonAidatOdemeTarihi" class="form-control" type="date" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kıyafet Bilgileri -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-shirt me-2"></i>Kıyafet Bilgileri
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input asp-for="KiyafetVerildiMi" class="form-check-input" id="kiyafetSwitch" />
+                            <label class="form-check-label fw-bold" for="kiyafetSwitch">Kıyafet Verildi mi?</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="kiyafetDetay" style="display: none;">
+                            <div class="mb-3">
+                                <label asp-for="KiyafetVerilisTarihi" class="form-label fw-bold">Veriliş Tarihi</label>
+                                <input asp-for="KiyafetVerilisTarihi" class="form-control" type="date" />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="KiyafetNotlari" class="form-label fw-bold">Kıyafet Notları</label>
+                                <textarea asp-for="KiyafetNotlari" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-save me-2"></i>Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-secondary btn-lg px-5">
+                <i class="bi bi-arrow-left me-2"></i>İptal
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Kıyafet detayı
+            $('#kiyafetSwitch').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#kiyafetDetay').slideDown();
+                } else {
+                    $('#kiyafetDetay').slideUp();
+                }
+            });
+
+            // Salon seçilince branşları getir
+            $('#salonSelect').change(function() {
+                var salonId = $(this).val();
+                $('#bransSelect').empty().append('<option value="">Yükleniyor...</option>');
+                $('#takimSelect').empty().append('<option value="">Önce branş seçin</option>');
+                $('#grupSelect').empty().append('<option value="">Önce takım seçin</option>');
+                
+                if (salonId) {
+                    $.getJSON('/Uyeler/BranslariGetir', { salonId: salonId }, function(data) {
+                        $('#bransSelect').empty().append('<option value="">Branş seçin</option>');
+                        $.each(data, function(i, b) {
+                            $('#bransSelect').append('<option value="' + b.id + '" ' +
+                                'data-takim-var="' + b.takimVarMi + '" ' +
+                                'data-grup-var="' + b.grupVarMi + '">' + b.ad + '</option>');
+                        });
+                    });
+                }
+            });
+
+            // Branş seçilince takım durumunu ayarla
+            $('#bransSelect').change(function() {
+                var bransId = $(this).val();
+                var selectedOption = $(this).find(':selected');
+                var takimVar = selectedOption.data('takim-var');
+                var grupVar = selectedOption.data('grup-var');
+
+                $('#takimSelect').empty();
+                $('#grupSelect').empty();
+
+                if (bransId && takimVar) {
+                    $.getJSON('/Uyeler/TakimlariGetir', { bransId: bransId }, function(data) {
+                        $('#takimSelect').empty().append('<option value="">Takım seçin</option>');
+                        $.each(data, function(i, t) {
+                            $('#takimSelect').append('<option value="' + t.id + '">' + t.ad + '</option>');
+                        });
+                    });
+                } else {
+                    $('#takimSelect').append('<option value="">Bu branşta takım yok</option>');
+                }
+
+                if (grupVar) {
+                    $('#grupSelect').append('<option value="">Grup seçin</option>');
+                } else {
+                    $('#grupSelect').append('<option value="">Grup yok</option>');
+                }
+            });
+
+            // Takım seçilince grupları getir
+            $('#takimSelect').change(function() {
+                var takimId = $(this).val();
+                $('#grupSelect').empty().append('<option value="">Yükleniyor...</option>');
+                
+                if (takimId) {
+                    $.getJSON('/Uyeler/GruplariGetir', { takimId: takimId }, function(data) {
+                        $('#grupSelect').empty().append('<option value="">Grup seçin</option>');
+                        $.each(data, function(i, g) {
+                            $('#grupSelect').append('<option value="' + g.id + '">' + g.ad + '</option>');
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}

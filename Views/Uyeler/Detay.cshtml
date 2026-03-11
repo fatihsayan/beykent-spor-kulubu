@@ -1,0 +1,174 @@
+@model SporKulubu.Models.Uye
+
+@{
+    ViewData["Title"] = "Üye Detayı";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-person-badge text-info me-2"></i>
+            Üye Detayı
+        </h2>
+        <div>
+            <a asp-action="Duzenle" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="bi bi-pencil me-1"></i>Düzenle
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-person me-2"></i>Kişisel Bilgiler
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">Ad Soyad:</th>
+                            <td>@Model.AdSoyad</td>
+                        </tr>
+                        <tr>
+                            <th>Telefon:</th>
+                            <td>@Model.Telefon</td>
+                        </tr>
+                        <tr>
+                            <th>Doğum Tarihi:</th>
+                            <td>@Model.DogumTarihi.ToShortDateString()</td>
+                        </tr>
+                        <tr>
+                            <th>Kayıt Tarihi:</th>
+                            <td>@Model.KayitTarihi.ToShortDateString()</td>
+                        </tr>
+                        <tr>
+                            <th>Branş:</th>
+                            <td>@Model.Branş</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-people me-2"></i>Veli Bilgileri
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">Veli Ad Soyad:</th>
+                            <td>@Model.VeliAdSoyad</td>
+                        </tr>
+                        <tr>
+                            <th>Veli Telefon:</th>
+                            <td>@Model.VeliTelefon</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-trophy me-2"></i>Spor Bilgileri
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">Spor Salonu:</th>
+                            <td>@(Model.SporSalonu?.Ad ?? "-")</td>
+                        </tr>
+                        <tr>
+                            <th>Takım:</th>
+                            <td>@(Model.Takim?.Ad ?? "-")</td>
+                        </tr>
+                        <tr>
+                            <th>Grup:</th>
+                            <td>@(Model.Grup?.Ad ?? "-")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-cash-stack me-2"></i>Aidat Bilgileri
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">Aylık Aidat:</th>
+                            <td class="fw-bold">@Model.AylikAidat.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <th>Son Ödeme Tarihi:</th>
+                            <td>@(Model.SonAidatOdemeTarihi?.ToShortDateString() ?? "-")</td>
+                        </tr>
+                        <tr>
+                            <th>Toplam Borç:</th>
+                            <td class="@(Model.ToplamBorc > 0 ? "text-danger fw-bold" : "text-success")">
+                                @Model.ToplamBorc.ToString("C")
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-shirt me-2"></i>Kıyafet Bilgileri
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Kıyafet Verildi mi?</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @if (Model.KiyafetVerildiMi)
+                            {
+                                <span class="badge bg-success">Verildi</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Verilmedi</span>
+                            }
+                        </div>
+                    </div>
+                    @if (Model.KiyafetVerildiMi)
+                    {
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <strong>Veriliş Tarihi:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                @(Model.KiyafetVerilisTarihi?.ToShortDateString() ?? "-")
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <strong>Kıyafet Notları:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                @(Model.KiyafetNotlari ?? "-")
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

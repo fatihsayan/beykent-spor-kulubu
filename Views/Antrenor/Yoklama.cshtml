@@ -1,0 +1,160 @@
+@{
+    ViewData["Title"] = "Yoklama Alma";
+    var sporcuListesi = ViewBag.Sporcular as List<SporKulubu.Models.Uye> ?? new List<SporKulubu.Models.Uye>();
+    var yoklamalar = ViewBag.Yoklamalar as Dictionary<int, SporKulubu.Models.Yoklama> ?? new Dictionary<int, SporKulubu.Models.Yoklama>();
+    var index = 0;
+}
+
+<div class="container-fluid mt-4">
+    <!-- Üst Bilgi Kartı -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-info text-white shadow-lg">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-calendar-check-fill display-4 me-4"></i>
+                        <div>
+                            <h2 class="fw-bold mb-2">Yoklama Alma Paneli</h2>
+                            <p class="lead mb-0">
+                                @ViewBag.TakimAdi - @ViewBag.GrupAdi | Toplam @sporcuListesi.Count sporcu
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarih Seçim Kartı -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="Yoklama" method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Tarih Seçin</label>
+                            <input type="date" name="tarih" class="form-control" value="@ViewBag.Tarih.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-2"></i>Getir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yoklama Formu -->
+    <div class="row">
+        <div class="col-12">
+            <form asp-action="YoklamaKaydet" method="post">
+                <input type="hidden" name="tarih" value="@ViewBag.Tarih.ToString("yyyy-MM-dd")" />
+
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-list-check me-2"></i>
+                            @ViewBag.Tarih.ToString("dd MMMM yyyy") tarihli yoklama
+                        </div>
+                        <span class="badge bg-light text-dark">@sporcuListesi.Count sporcu</span>
+                    </div>
+
+                    <div class="card-body">
+                        @if (sporcuListesi.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 5%">#</th>
+                                            <th style="width: 25%">Sporcu Adı</th>
+                                            <th style="width: 20%">Durum</th>
+                                            <th style="width: 30%">Not</th>
+                                            <th style="width: 20%">Veli Telefon</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var uye in sporcuListesi)
+                                        {
+                                            index++;
+                                            var yoklamaVar = yoklamalar.ContainsKey(uye.Id);
+                                            var yoklama = yoklamaVar ? yoklamalar[uye.Id] : null;
+                                            
+                                            <tr>
+                                                <td>@index</td>
+                                                <td class="fw-bold">@uye.AdSoyad</td>
+                                                <td>
+                                                    <select name="yoklamalar[@uye.Id].Durum" class="form-select form-select-sm">
+                                                        <option value="Katıldı" selected="@(yoklamaVar && yoklama?.Durum == "Katıldı" ? true : false)">
+                                                            ✅ Katıldı
+                                                        </option>
+                                                        <option value="Katılmadı" selected="@(yoklamaVar && yoklama?.Durum == "Katılmadı" ? true : false)">
+                                                            ❌ Katılmadı
+                                                        </option>
+                                                        <option value="İzinli" selected="@(yoklamaVar && yoklama?.Durum == "İzinli" ? true : false)">
+                                                            📝 İzinli
+                                                        </option>
+                                                        <option value="Raporlu" selected="@(yoklamaVar && yoklama?.Durum == "Raporlu" ? true : false)">
+                                                            🏥 Raporlu
+                                                        </option>
+                                                    </select>
+                                                    <input type="hidden" name="yoklamalar[@uye.Id].UyeId" value="@uye.Id" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="yoklamalar[@uye.Id].Not" class="form-control form-control-sm" 
+                                                           value="@(yoklamaVar ? yoklama?.Not : "")" 
+                                                           placeholder="Varsa not..." />
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">@uye.VeliTelefon</small>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-md-8">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        <strong>İpucu:</strong> Yoklama durumlarını işaretledikten sonra kaydet butonuna basın.
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button type="submit" class="btn btn-success btn-lg w-100">
+                                        <i class="bi bi-save me-2"></i>Yoklamayı Kaydet
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Bu grupta henüz sporcu bulunmuyor.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Tüm sporcuları katıldı olarak işaretle
+        $('#markAllPresent').click(function() {
+            $('select[name$=".Durum"]').val('Katıldı');
+        });
+
+        // Tüm sporcuları izinli olarak işaretle
+        $('#markAllPermitted').click(function() {
+            $('select[name$=".Durum"]').val('İzinli');
+        });
+    });
+</script>

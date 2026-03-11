@@ -1,0 +1,235 @@
+@model SporKulubu.Models.Uye
+
+@{
+    ViewData["Title"] = "Üye Düzenle";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">
+        <i class="bi bi-pencil-square text-warning me-2"></i>
+        Üye Düzenle
+    </h2>
+
+    <form asp-action="Duzenle" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="KayitTarihi" />
+        <input type="hidden" asp-for="Branş" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-person-badge me-2"></i>Kişisel Bilgiler
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="AdSoyad" class="form-label fw-bold">Ad Soyad</label>
+                            <input asp-for="AdSoyad" class="form-control" />
+                            <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Telefon" class="form-label fw-bold">Telefon</label>
+                            <input asp-for="Telefon" class="form-control" />
+                            <span asp-validation-for="Telefon" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="DogumTarihi" class="form-label fw-bold">Doğum Tarihi</label>
+                            <input asp-for="DogumTarihi" class="form-control" type="date" />
+                            <span asp-validation-for="DogumTarihi" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-people me-2"></i>Veli Bilgileri
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="VeliAdSoyad" class="form-label fw-bold">Veli Ad Soyad</label>
+                            <input asp-for="VeliAdSoyad" class="form-control" />
+                            <span asp-validation-for="VeliAdSoyad" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="VeliTelefon" class="form-label fw-bold">Veli Telefon</label>
+                            <input asp-for="VeliTelefon" class="form-control" />
+                            <span asp-validation-for="VeliTelefon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning">
+                <i class="bi bi-trophy me-2"></i>Spor Bilgileri
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Spor Salonu</label>
+                            <select asp-for="SporSalonuId" class="form-select" id="salonSelect" asp-items="ViewBag.SporSalonlari">
+                                <option value="">-- Salon Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Takım</label>
+                            <select asp-for="TakimId" class="form-select" id="takimSelect">
+                                <option value="">-- Önce Salon Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Grup</label>
+                            <select asp-for="GrupId" class="form-select" id="grupSelect">
+                                <option value="">-- Önce Takım Seçin --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-cash-stack me-2"></i>Aidat Bilgileri
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="AylikAidat" class="form-label fw-bold">Aylık Aidat (TL)</label>
+                            <input asp-for="AylikAidat" class="form-control" />
+                            <span asp-validation-for="AylikAidat" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="SonAidatOdemeTarihi" class="form-label fw-bold">Son Aidat Ödeme Tarihi</label>
+                            <input asp-for="SonAidatOdemeTarihi" class="form-control" type="date" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-shirt me-2"></i>Kıyafet Bilgileri
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input asp-for="KiyafetVerildiMi" class="form-check-input" id="kiyafetSwitch" />
+                            <label class="form-check-label fw-bold" for="kiyafetSwitch">Kıyafet Verildi mi?</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="kiyafetDetay" style="display: none;">
+                            <div class="mb-3">
+                                <label asp-for="KiyafetVerilisTarihi" class="form-label fw-bold">Veriliş Tarihi</label>
+                                <input asp-for="KiyafetVerilisTarihi" class="form-control" type="date" />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="KiyafetNotlari" class="form-label fw-bold">Kıyafet Notları</label>
+                                <textarea asp-for="KiyafetNotlari" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-save me-2"></i>Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-secondary btn-lg px-5">
+                <i class="bi bi-arrow-left me-2"></i>İptal
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Kıyafet detayı
+            $('#kiyafetSwitch').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#kiyafetDetay').slideDown();
+                } else {
+                    $('#kiyafetDetay').slideUp();
+                }
+            });
+            
+            // Mevcut duruma göre göster/gizle
+            if ($('#kiyafetSwitch').is(':checked')) {
+                $('#kiyafetDetay').show();
+            }
+
+            // Salon seçilince takımları getir
+            $('#salonSelect').change(function() {
+                var salonId = $(this).val();
+                $('#takimSelect').empty().append('<option value="">Yükleniyor...</option>');
+                $('#grupSelect').empty().append('<option value="">Önce takım seçin</option>');
+                
+                if (salonId) {
+                    $.getJSON('/Uyeler/TakimlariGetir', { salonId: salonId }, function(data) {
+                        $('#takimSelect').empty().append('<option value="">-- Takım Seçin --</option>');
+                        $.each(data, function(i, takim) {
+                            $('#takimSelect').append('<option value="' + takim.id + '">' + takim.ad + '</option>');
+                        });
+                        
+                        // Mevcut takımı seç
+                        var seciliTakim = @(Model.TakimId?.ToString() ?? "null");
+                        if (seciliTakim) {
+                            $('#takimSelect').val(seciliTakim);
+                            $('#takimSelect').trigger('change');
+                        }
+                    });
+                } else {
+                    $('#takimSelect').empty().append('<option value="">-- Önce salon seçin --</option>');
+                }
+            });
+
+            // Takım seçilince grupları getir
+            $('#takimSelect').change(function() {
+                var takimId = $(this).val();
+                $('#grupSelect').empty().append('<option value="">Yükleniyor...</option>');
+                
+                if (takimId) {
+                    $.getJSON('/Uyeler/GruplariGetir', { takimId: takimId }, function(data) {
+                        $('#grupSelect').empty().append('<option value="">-- Grup Seçin --</option>');
+                        $.each(data, function(i, grup) {
+                            $('#grupSelect').append('<option value="' + grup.id + '">' + grup.ad + '</option>');
+                        });
+                        
+                        // Mevcut grubu seç
+                        var seciliGrup = @(Model.GrupId?.ToString() ?? "null");
+                        if (seciliGrup) {
+                            $('#grupSelect').val(seciliGrup);
+                        }
+                    });
+                } else {
+                    $('#grupSelect').empty().append('<option value="">-- Önce takım seçin --</option>');
+                }
+            });
+
+            // Sayfa yüklendiğinde salonu seç ve tetikle
+            var ilkSalon = @(Model.SporSalonuId?.ToString() ?? "null");
+            if (ilkSalon) {
+                $('#salonSelect').val(ilkSalon);
+                $('#salonSelect').trigger('change');
+            }
+        });
+    </script>
+}

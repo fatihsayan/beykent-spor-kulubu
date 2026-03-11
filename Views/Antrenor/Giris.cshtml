@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "Antrenör Girişi";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- Üst Gradient Banner -->
+                <div class="bg-gradient-primary text-white text-center py-5 px-4">
+                    <i class="bi bi-person-badge-fill display-1 mb-3"></i>
+                    <h2 class="fw-bold mb-0">Antrenör Girişi</h2>
+                    <p class="opacity-75 mb-0">Beykent Spor Kulübü</p>
+                </div>
+
+                <!-- Giriş Formu -->
+                <div class="card-body p-5">
+                    @if (ViewBag.Hata != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @ViewBag.Hata
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Giris" method="post">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">E-posta Adresi</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="bi bi-envelope-fill text-primary"></i>
+                                </span>
+                                <input type="email" name="email" class="form-control border-0 border-bottom rounded-0 ps-0" 
+                                       placeholder="ornek@beykentspor.com" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Şifre</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="bi bi-lock-fill text-primary"></i>
+                                </span>
+                                <input type="password" name="sifre" class="form-control border-0 border-bottom rounded-0 ps-0" 
+                                       placeholder="••••••••" required />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mb-3 rounded-3 fw-bold">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>GİRİŞ YAP
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-shield-lock me-1"></i>
+                            Yetkili antrenörler içindir.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yardımcı Bilgi -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Giriş yapamıyorsanız yöneticinizle iletişime geçin.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .input-group-text {
+        border-radius: 10px 0 0 10px;
+    }
+    .form-control:focus {
+        box-shadow: none;
+        border-bottom: 2px solid #0d6efd !important;
+    }
+    .btn-primary {
+        transition: all 0.3s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+    }
+</style>

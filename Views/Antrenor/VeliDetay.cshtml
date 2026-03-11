@@ -1,0 +1,217 @@
+@model SporKulubu.Models.Uye
+
+@{
+    ViewData["Title"] = "Veli İletişim";
+}
+
+<div class="container mt-4">
+    <!-- Başlık Kartı -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white shadow-lg">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-chat-dots-fill display-4 me-4"></i>
+                        <div>
+                            <h2 class="fw-bold mb-2">Veli İletişim</h2>
+                            <p class="lead mb-0">@Model.AdSoyad - Veli Bilgileri</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sol Taraf - Sporcu Bilgileri -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-person-circle display-1 text-primary mb-3"></i>
+                    <h4 class="fw-bold">@Model.AdSoyad</h4>
+                    <p class="text-muted">@(Model.Brans?.Ad ?? "-") / @(Model.Takim?.Ad ?? "-")</p>
+                    <hr />
+                    <div class="text-start">
+                        <p class="mb-2">
+                            <i class="bi bi-calendar me-2 text-primary"></i>
+                            <strong>Doğum Tarihi:</strong> @Model.DogumTarihi.ToShortDateString()
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-building me-2 text-primary"></i>
+                            <strong>Salon:</strong> @(Model.SporSalonu?.Ad ?? "-")
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-grid-3x3 me-2 text-primary"></i>
+                            <strong>Grup:</strong> @(Model.Grup?.Ad ?? "-")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf - Veli İletişim -->
+        <div class="col-md-8">
+            <!-- Veli Bilgileri Kartı -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-people text-success me-2"></i>
+                        Veli Bilgileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <i class="bi bi-person me-2 text-success"></i>
+                                <strong>Veli Adı:</strong> @Model.VeliAdSoyad
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <i class="bi bi-telephone me-2 text-success"></i>
+                                <strong>Telefon:</strong> @Model.VeliTelefon
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mesajlaşma Kartları -->
+            <div class="row g-4">
+                <!-- WhatsApp Kartı -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-4 d-inline-block mb-3">
+                                <i class="bi bi-whatsapp text-success fs-1"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">WhatsApp</h4>
+                            <p class="text-muted mb-4">Velinize WhatsApp üzerinden hızlı mesaj gönderin</p>
+                            
+                            <!-- Hazır Mesaj Şablonları -->
+                            <div class="mb-3">
+                                <select class="form-select" id="whatsappTemplate">
+                                    <option value="">Hazır Mesaj Seçin</option>
+                                    <option value="Antrenman bugün 16:00'da başlayacaktır. Katılımınızı bekliyoruz.">📅 Antrenman Hatırlatma</option>
+                                    <option value="Değerli velimiz, @Model.AdSoyad bugün antrenmana katılmamıştır. Bilginize.">❌ Yoklama Bilgisi</option>
+                                    <option value="Önümüzdeki hafta antrenman saatlerinde değişiklik olacaktır. Detaylı bilgi için bize ulaşın.">⏰ Saat Değişikliği</option>
+                                    <option value="Aidat ödemeniz gecikmiştir. En kısa sürede ödeme yapmanızı rica ederiz.">💰 Aidat Hatırlatma</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <textarea class="form-control" id="whatsappMessage" rows="3" placeholder="Mesajınızı yazın..."></textarea>
+                            </div>
+
+                            <button class="btn btn-success btn-lg w-100" id="sendWhatsApp">
+                                <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Gönder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SMS Kartı -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-4 d-inline-block mb-3">
+                                <i class="bi bi-envelope-paper text-primary fs-1"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">SMS</h4>
+                            <p class="text-muted mb-4">Velinize SMS ile hızlı bilgilendirme yapın</p>
+
+                            <!-- Hazır Mesaj Şablonları -->
+                            <div class="mb-3">
+                                <select class="form-select" id="smsTemplate">
+                                    <option value="">Hazır Mesaj Seçin</option>
+                                    <option value="Antrenman bugün 16:00'da başlayacaktır.">📅 Antrenman Hatırlatma</option>
+                                    <option value="@Model.AdSoyad bugün antrenmana katılmamıştır.">❌ Yoklama Bilgisi</option>
+                                    <option value="Antrenman saatleri değişmiştir. Detay için arayın.">⏰ Saat Değişikliği</option>
+                                    <option value="Aidat ödemeniz gecikmiştir. Lütfen ödeme yapınız.">💰 Aidat Hatırlatma</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <textarea class="form-control" id="smsMessage" rows="3" placeholder="Mesajınızı yazın..."></textarea>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg w-100" id="sendSms">
+                                <i class="bi bi-envelope-paper me-2"></i>SMS Gönder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geri Dön Butonu -->
+            <div class="mt-4">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Geri Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px 15px;
+    }
+    .btn {
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var telefon = '@Model.VeliTelefon?.Replace(" ", "").Replace("(", "").Replace(")", "").Replace("-", "")';
+            var adSoyad = '@Model.AdSoyad';
+
+            // WhatsApp şablon seçimi
+            $('#whatsappTemplate').change(function() {
+                if ($(this).val()) {
+                    $('#whatsappMessage').val($(this).val());
+                }
+            });
+
+            // SMS şablon seçimi
+            $('#smsTemplate').change(function() {
+                if ($(this).val()) {
+                    $('#smsMessage').val($(this).val());
+                }
+            });
+
+            // WhatsApp Gönder
+            $('#sendWhatsApp').click(function() {
+                var mesaj = $('#whatsappMessage').val().trim();
+                if (!mesaj) {
+                    alert('Lütfen bir mesaj yazın veya şablon seçin.');
+                    return;
+                }
+                
+                var url = 'https://wa.me/' + telefon + '?text=' + encodeURIComponent(mesaj);
+                window.open(url, '_blank');
+            });
+
+            // SMS Gönder
+            $('#sendSms').click(function() {
+                var mesaj = $('#smsMessage').val().trim();
+                if (!mesaj) {
+                    alert('Lütfen bir mesaj yazın veya şablon seçin.');
+                    return;
+                }
+
+                var url = 'sms:' + telefon + '?body=' + encodeURIComponent(mesaj);
+                window.location.href = url;
+            });
+        });
+    </script>
+}

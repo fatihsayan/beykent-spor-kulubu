@@ -1,0 +1,223 @@
+@{
+    ViewData["Title"] = "Veli Mesaj";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Üst Bilgi Kartı -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white shadow-lg">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-chat-dots-fill display-4 me-4"></i>
+                        <div>
+                            <h2 class="fw-bold mb-2">Veli İletişim Paneli</h2>
+                            <p class="lead mb-0">@ViewBag.TakimAdi - @ViewBag.GrupAdi grubundaki velilere toplu mesaj gönderebilirsiniz.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sol Taraf - Veli Listesi -->
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-telephone-fill me-2"></i>Veli İletişim Bilgileri
+                    <span class="badge bg-light text-dark float-end mt-1">@ViewBag.Sporcular.Count Veli</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
+                        @foreach (var uye in ViewBag.Sporcular)
+                        {
+                            <div class="list-group-item p-3 hover-effect">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">@uye.AdSoyad</h6>
+                                        <p class="mb-1 small text-muted">
+                                            <i class="bi bi-person me-1"></i>Veli: @uye.VeliAdSoyad
+                                        </p>
+                                        <p class="mb-0 small">
+                                            <i class="bi bi-telephone me-1 text-success"></i>@uye.VeliTelefon
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(uye.KiyafetNotlari))
+                                        {
+                                            <span class="badge bg-info mt-2">@uye.KiyafetNotlari</span>
+                                        }
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary copy-phone" data-phone="@uye.VeliTelefon">
+                                        <i class="bi bi-files"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf - Mesaj Gönderme Paneli -->
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-send-fill me-2"></i>Toplu Mesaj Gönder
+                </div>
+                <div class="card-body">
+                    <form id="messageForm">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mesaj Türü</label>
+                            <select class="form-select" id="messageType">
+                                <option value="duyuru">📢 Genel Duyuru</option>
+                                <option value="yoklama">📋 Yoklama Hatırlatma</option>
+                                <option value="aidat">💰 Aidat Hatırlatma</option>
+                                <option value="antrenman">🏋️ Antrenman İptali/Duyurusu</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mesaj Başlığı</label>
+                            <input type="text" class="form-control" id="messageTitle" placeholder="Örn: Antrenman Duyurusu" value="Antrenman Bilgilendirmesi">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mesaj İçeriği</label>
+                            <textarea class="form-control" id="messageContent" rows="5" placeholder="Mesajınızı yazın...">Değerli Veliler,
+
+@ViewBag.TakimAdi - @ViewBag.GrupAdı grubu antrenman programı hakkında bilgilendirme yapmak isteriz.
+
+İyi günler dileriz.
+Antrenör @Context.Session.GetString("AntrenorAdi")</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Alıcılar</label>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="selectAll" checked>
+                                    <label class="form-check-label fw-bold" for="selectAll">
+                                        Tüm Veliler (@ViewBag.Sporcular.Count kişi)
+                                    </label>
+                                </div>
+                                <hr class="my-2">
+                                <div style="max-height: 150px; overflow-y: auto;">
+                                    @foreach (var uye in ViewBag.Sporcular)
+                                    {
+                                        <div class="form-check">
+                                            <input class="form-check-input message-checkbox" type="checkbox" 
+                                                   value="@uye.VeliTelefon" data-name="@uye.AdSoyad" checked>
+                                            <label class="form-check-label">
+                                                @uye.AdSoyad - @uye.VeliTelefon
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-success w-100 py-3" id="sendSms">
+                                    <i class="bi bi-envelope-paper-fill me-2"></i>SMS Gönder
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-info w-100 py-3" id="sendWhatsApp">
+                                    <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Gönder
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Not:</strong> SMS simülasyonu şu an için konsola yazdırılmaktadır. Gerçek SMS entegrasyonu için ayarlama yapılabilir.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Telefon numarası kopyalama scripti -->
+<script>
+    $(document).ready(function() {
+        // Tümünü seç / seçimi kaldır
+        $('#selectAll').change(function() {
+            $('.message-checkbox').prop('checked', $(this).is(':checked'));
+        });
+
+        // Telefon numarası kopyalama
+        $('.copy-phone').click(function() {
+            var phone = $(this).data('phone');
+            navigator.clipboard.writeText(phone).then(function() {
+                alert('Telefon numarası kopyalandı: ' + phone);
+            });
+        });
+
+        // SMS Gönder simülasyonu
+        $('#sendSms').click(function() {
+            var selected = [];
+            $('.message-checkbox:checked').each(function() {
+                selected.push($(this).data('name') + ' - ' + $(this).val());
+            });
+
+            if (selected.length === 0) {
+                alert('Lütfen en az bir veli seçin!');
+                return;
+            }
+
+            var message = $('#messageContent').val();
+            var title = $('#messageTitle').val();
+            var type = $('#messageType option:selected').text();
+
+            console.log('=== SMS GÖNDERİLİYOR ===');
+            console.log('Mesaj Türü:', type);
+            console.log('Başlık:', title);
+            console.log('İçerik:', message);
+            console.log('Alıcılar:', selected);
+            console.log('========================');
+
+            alert('✅ SMS başarıyla gönderildi! (Konsola bakın)');
+        });
+
+        // WhatsApp Gönder
+        $('#sendWhatsApp').click(function() {
+            var selected = [];
+            $('.message-checkbox:checked').each(function() {
+                selected.push($(this).val());
+            });
+
+            if (selected.length === 0) {
+                alert('Lütfen en az bir veli seçin!');
+                return;
+            }
+
+            var message = $('#messageContent').val();
+            var title = $('#messageTitle').val();
+            var fullMessage = title + '\n\n' + message;
+
+            // İlk velinin numarasına WhatsApp linki aç
+            var phone = selected[0].replace(/\s/g, '');
+            var url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(fullMessage);
+            window.open(url, '_blank');
+        });
+    });
+</script>
+
+<style>
+    .hover-effect {
+        transition: background-color 0.3s, transform 0.2s;
+        cursor: pointer;
+    }
+    .hover-effect:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+</style>
